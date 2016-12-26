@@ -157,3 +157,4 @@ curl -s http://dict.cn/help | grep "<li><strong>" | tr -d '\t' | sed 's/<li><str
 6. ~~短语查询功能~~
 7. 整句翻译功能
 5. ~~做成一个小项目 , 可以直接给别人用的那种~~
+8. 相对路径和绝对路径的BUG , 不应该使用os.system函数去调用 , 而是应该使用python的模块
