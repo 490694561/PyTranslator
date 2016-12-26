@@ -18,7 +18,7 @@ import ConfigParser
 # http://api.fanyi.baidu.com/api/trans/product/apidoc
 # Init-start
 configParser = ConfigParser.SafeConfigParser()
-configParser.read("../Config/config.conf")
+configParser.read("/opt/fy/Config/config.conf")
 # Init-end
 # define-start
 url = "http://api.fanyi.baidu.com/api/trans/vip/translate"
