@@ -19,10 +19,12 @@ configParser = ConfigParser.SafeConfigParser()
 configParser.read("../Config/config.conf")
 # Init-end
 # Define-start
-key = configParser.get("YoudaoAPI","key")
-keyfrom = configParser.get("YoudaoAPI","keyfrom")
+key = configParser.get("YoudaoAPI", "key")
+keyfrom = configParser.get("YoudaoAPI", "keyfrom")
 doctype = "json"
 # Define-end
+
+
 def printHelp():
     binName = sys.argv[0].split("/")[-1]
     print "Usage : "
@@ -31,48 +33,69 @@ def printHelp():
     print "\t" + binName + " help"
     print "\t" + binName + " 帮助"
     print "\t" + binName + " \"help me\""
+
+
 def checkConfig():
     global key
     global keyfrom
     if key == "":
-        print "Please config your key!"
+        print "Please config your key!",
+        print "You can use Setup.py as a install guide"
         exit(1)
     if keyfrom == "":
-        print "Please config your keyfrom!"
+        print "Please config your keyfrom!",
+        print "You can use Setup.py as a install guide"
         exit(1)
+
+
 def initUserInput():
     if len(sys.argv) != 2:
         printHelp()
         exit(1)
+
+
 def getUrl(keyfrom, key, doctype, q):
-    tempUrl = "http://fanyi.youdao.com/openapi.do?keyfrom=" + keyfrom + "&key=" + key + "&type=data&doctype=" + doctype + "&version=1.1&q=" + q
+    tempUrl = "http://fanyi.youdao.com/openapi.do?keyfrom=" + keyfrom + \
+        "&key=" + key + "&type=data&doctype=" + doctype + "&version=1.1&q=" + q
     return tempUrl
+
+
 def getContent(url):
     return requests.get(url).text.encode("UTF-8")
+
+
 def getTranslation(jsonObj):
     result = ""
     translations = jsonObj['translation']
     for translation in translations:
         result += translation + "\r\n"
     return result[0:-2]
+
+
 def getUSPhonetic(jsonObj):
     try:
         usPhonetic = jsonObj['basic']['us-phonetic']
     except:
         usPhonetic = ""
     return usPhonetic
+
+
 def getPhonetic(jsonObj):
     try:
         phonetic = jsonObj['basic']['phonetic']
     except:
         phonetic = ""
     return phonetic
+
+
 def getUKPhonetic(jsonObj):
     try:
         usPhonetic = jsonObj['basic']['uk-phonetic']
     except:
         usPhonetic = ""
     return usPhonetic
+
+
 def getExplains(jsonObj):
     try:
         explain = jsonObj['basic']['explains']
@@ -80,14 +103,20 @@ def getExplains(jsonObj):
     except:
         print "[Err] : No result"
         exit(1)
+
+
 def getWeb(jsonObj):
     return jsonObj['web']
+
+
 def getMax(numbers):
     maxNumber = 0
     for number in numbers:
         if number > maxNumber:
             maxNumber = number
     return maxNumber
+
+
 def printResult(translation, usPhonetic, phonetic, ukPhonetic, explains, webs):
     maxLength = 16
     print "-" * maxLength + "翻译" + "-" * maxLength
@@ -110,6 +139,8 @@ def printResult(translation, usPhonetic, phonetic, ukPhonetic, explains, webs):
             print "    ",
             print value
     return ""
+
+
 def main():
     checkConfig()
     initUserInput()
@@ -129,4 +160,3 @@ def main():
     printResult(translation, usPhonetic, phonetic, ukPhonetic, explains, webs)
 if __name__ == '__main__':
     main()
-

@@ -1,2 +1,6 @@
 # Ingnore the config file
 config.conf
+
+# Ignore the vim .swp file
+*.swp
+*.swo

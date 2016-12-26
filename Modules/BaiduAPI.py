@@ -23,33 +23,45 @@ configParser.read("../Config/config.conf")
 # define-start
 url = "http://api.fanyi.baidu.com/api/trans/vip/translate"
 from_ = "auto"
-appid = ""
-key = ""
+appid = configParser.get("BaiduAPI", "appid")
+key = configParser.get("BaiduAPI", "key")
 methods = ['zh', 'en']
 methods += ['yue', 'wyw', 'jp', 'kor', 'fra', 'spa', 'th', 'ara']
 methods += ['ru', 'pt', 'de', 'it', 'el', 'nl', 'pl', 'bul', 'est']
 methods += ['dan', 'fin', 'cs', 'rom', 'slo', 'swe', 'hu', 'cht', 'vie']
 # define-end
+
+
 def getRandomString(length):
     result = ""
     for i in range(length):
         result += chr(random.randint(ord('a'), ord('z')))
     return result
+
+
 def getMd5(src):
     md5 = hashlib.md5()
     md5.update(src)
     return md5.hexdigest()
+
+
 def getSign(appid, q, salt, key):
     return getMd5(appid + q + salt + key)
+
+
 def printHelp():
     print "Usage : python " + sys.argv[0] + " [zh(Default)/en/yue/wyw/\
         jp/kor/fra/spa/th/ara/ru/pt/de/it/el/nl/\
         pl/bul/est/dan/fin/cs/rom/slo/swe/hu/cht/vie] [word]"
     print "Example : python " + sys.argv[0] + " ch \"help\""
     print "Example : python " + sys.argv[0] + " en \"帮助\""
+
+
 def getResult(jsonContent):
     jsonObj = json.loads(jsonContent)
     return jsonObj['trans_result'][0]['dst']
+
+
 def initUserInput():
     global methods
     if len(sys.argv) == 2:
@@ -63,12 +75,18 @@ def initUserInput():
             return method
     print "Method Error!"
     exit(1)
+
+
 def getUrl(url, q, from_, to, appid, salt, sign):
     tempUrl = "%s?q=%s&from=%s&to=%s&appid=%s&salt=%s&sign=%s" % \
         (url, q, from_, to, appid, salt, sign)
     return tempUrl
+
+
 def getContent(url):
     return requests.get(url).text.encode("UTF-8")
+
+
 def main():
     initUserInput()
     global url
@@ -86,6 +104,7 @@ def main():
     tempUrl = getUrl(url, q, from_, to, appid, salt, sign)
     content = getContent(tempUrl)
     print getResult(content)
+
+
 if __name__ == '__main__':
     main()
-
