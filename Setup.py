@@ -105,6 +105,7 @@ def main():
     os.system("sudo rm -rf /opt/fy/")
     os.system("sudo rm /bin/fy")
     # 开始安装
+    os.system("pip install -r requirements.txt")
     currentDicName = getCurrentDicName()
     shutil.copytree("../" + currentDicName, installPath)
     # create a soft link
