@@ -67,7 +67,7 @@ def main():
     global defaultModule
     checkConfig(defaultModule)
     word = getUserInput()
-    command = "python /opt/fy/Modules/" + defaultModule + ".py" + " " + word
+    command = "python /opt/fy/Modules/" + defaultModule + ".py" + " \"" + word + "\""
     os.system(command)
 
 
