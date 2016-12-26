@@ -8,7 +8,7 @@ import os
 
 
 configParser = ConfigParser.SafeConfigParser()
-configParser.read("./Config/config.conf")
+configParser.read("/opt/fy/Config/config.conf")
 
 defaultModule = configParser.get("Global", "defaultModule")
 
@@ -67,7 +67,7 @@ def main():
     global defaultModule
     checkConfig(defaultModule)
     word = getUserInput()
-    command = "python ./Modules/" + defaultModule + ".py" + " " + word
+    command = "python /opt/fy/Modules/" + defaultModule + ".py" + " " + word
     os.system(command)
 
 
