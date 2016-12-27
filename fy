@@ -1,26 +1,30 @@
 #!/usr/bin/env python
 # encoding:utf8
-
-
-import sys
-import ConfigParser
+from __future__ import print_function
 import os
+import sys
+
+if sys.version_info[0] < 3:
+    from ConfigParser import SafeConfigParser
+else:
+    from configparser import ConfigParser as SafeConfigParser
 
 
-configParser = ConfigParser.SafeConfigParser()
-configParser.read("/opt/fy/Config/config.conf")
-
-defaultModule = configParser.get("Global", "defaultModule")
+def get_config():
+    configParser = SafeConfigParser()
+    configParser.read("/opt/fy/Config/config.conf")
+    defaultModule = configParser.get("Global", "defaultModule")
+    return (configParser, defaultModule)
 
 
 def printHelp():
     binName = sys.argv[0].split("/")[-1]
-    print "Usage : "
-    print "\t" + binName + " [word]"
-    print "Example : "
-    print "\t" + binName + " help"
-    print "\t" + binName + " 帮助"
-    print "\t" + binName + " \"help me\""
+    print("Usage : ")
+    print("\t {binName} [word]".format(binName=binName))
+    print("Example : ")
+    print("\t {binName} help".format(binName=binName))
+    print("\t {binName} 帮助".format(binName=binName))
+    print("\t {binName} \"help me\"".format(binName=binName))
 
 
 def getUserInput():
@@ -31,30 +35,29 @@ def getUserInput():
         return sys.argv[1]
 
 
-def checkConfig(ModuleName):
-    global configParser
+def checkConfig(configParser, ModuleName):
     if ModuleName == "YoudaoAPI":
         key = configParser.get("YoudaoAPI", "key")
         keyfrom = configParser.get("YoudaoAPI", "keyfrom")
         if key == "":
-            print "Please config your key!",
-            print "You can use Setup.py as a install guide"
+            print("Please config your key!")
+            print("You can use Setup.py as a install guide")
             return False
         if keyfrom == "":
-            print "Please config your keyfrom!",
-            print "You can use Setup.py as a install guide"
+            print("Please config your keyfrom!")
+            print("You can use Setup.py as a install guide")
             return False
         return True
     elif ModuleName == "BaiduAPI":
         key = configParser.get("BaiduAPI", "key")
         appid = configParser.get("BaiduAPI", "appid")
         if key == "":
-            print "Please config your key!",
-            print "You can use Setup.py as a install guide"
+            print("Please config your key!")
+            print("You can use Setup.py as a install guide")
             return False
         if appid == "":
-            print "Please config your appid!",
-            print "You can use Setup.py as a install guide"
+            print("Please config your appid!",)
+            print("You can use Setup.py as a install guide")
             return False
         return True
     elif ModuleName == "Spider":
@@ -64,10 +67,12 @@ def checkConfig(ModuleName):
 
 
 def main():
-    global defaultModule
-    checkConfig(defaultModule)
+    configParser, defaultModule = get_config()
+    checkConfig(configParser, defaultModule)
     word = getUserInput()
-    command = "python /opt/fy/Modules/" + defaultModule + ".py" + " \"" + word + "\""
+    command = 'python /opt/fy/Modules/{defaultModule}.py' \
+              ' \" {word} \"'.format(defaultModule=defaultModule,
+                                     word=word)
     os.system(command)
 
 

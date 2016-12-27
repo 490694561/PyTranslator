@@ -1,9 +1,17 @@
 #!/usr/bin/env python
 # encoding:utf8
+from __future__ import print_function
 import requests
 import sys
 import json
-import ConfigParser
+
+if sys.version_info[0] < 3:
+    from ConfigParser import SafeConfigParser
+    str = unicode
+    bytes = str
+else:
+    from configparser import ConfigParser as SafeConfigParser
+
 # 刚才在百度上查询了一些资料, 发现百度有开放的翻译接口 , 还有有道翻译也是有的 , 这些接口都需要自己去注册帐号并申请一个应用
 # 然后就可以使用API的功能了 , 这里将两者的地址都贴出来
 # 使用API的好处就是不需要对DOM进行解析 , 获得的结果直接就是我们需要的JSON , 对数据提取显示就可以了
@@ -14,37 +22,37 @@ import ConfigParser
 # 这里为了方便实用起见, 就不使用爬虫这种方式了 , 直接使用现成的API接口
 # 直接去查询API的帮助文档 , 看看都需要发送什么数据
 # http://api.fanyi.baidu.com/api/trans/product/apidoc
-# Init-start
-configParser = ConfigParser.SafeConfigParser()
-configParser.read("/opt/fy/Config/config.conf")
-# Init-end
-# Define-start
-key = configParser.get("YoudaoAPI", "key")
-keyfrom = configParser.get("YoudaoAPI", "keyfrom")
-doctype = "json"
-# Define-end
 
+
+# 初始化，获取必要配置
+def get_config():
+    configParser = SafeConfigParser()
+    # configParser.read("/opt/fy/Config/config.conf")
+    configParser.read("Config/config.conf")
+    key = configParser.get("YoudaoAPI", "key")
+    keyfrom = configParser.get("YoudaoAPI", "keyfrom")
+    url = configParser.get("YoudaoAPI", "url")
+    doctype = configParser.get("YoudaoAPI", "doctype")
+    return (key, keyfrom, url, doctype)
 
 def printHelp():
     binName = sys.argv[0].split("/")[-1]
-    print "Usage : "
-    print "\t" + binName + " [word]"
-    print "Example : "
-    print "\t" + binName + " help"
-    print "\t" + binName + " 帮助"
-    print "\t" + binName + " \"help me\""
+    print("Usage : ")
+    print("\t {binName} [word]".format(binName=binName))
+    print("Example : ")
+    print("\t {binName} help".format(binName=binName))
+    print("\t {binName} 帮助".format(binName=binName))
+    print("\t {binName} \"help me\"".format(binName=binName))
 
 
-def checkConfig():
-    global key
-    global keyfrom
-    if key == "":
-        print "Please config your key!",
-        print "You can use Setup.py as a install guide"
+def checkConfig(key, keyfrom):
+    if not key:
+        print("Please config your key!")
+        print("You can use Setup.py as a install guide")
         exit(1)
-    if keyfrom == "":
-        print "Please config your keyfrom!",
-        print "You can use Setup.py as a install guide"
+    if not keyfrom:
+        print("Please config your keyfrom!")
+        print("You can use Setup.py as a install guide")
         exit(1)
 
 
@@ -54,14 +62,16 @@ def initUserInput():
         exit(1)
 
 
-def getUrl(keyfrom, key, doctype, q):
-    tempUrl = "http://fanyi.youdao.com/openapi.do?keyfrom=" + keyfrom + \
-        "&key=" + key + "&type=data&doctype=" + doctype + "&version=1.1&q=" + q
+def getUrl(url, keyfrom, key, doctype, q):
+    tempUrl = "{url}?keyfrom={keyfrom}" \
+              "&key={key}&type=data&doctype={doctype}&version=1.1" \
+              "&q={q}".format(url=url, keyfrom=keyfrom, 
+                              key=key, doctype=doctype, q=q)
     return tempUrl
 
 
 def getContent(url):
-    return requests.get(url).text.encode("UTF-8")
+    return requests.get(url).text
 
 
 def getTranslation(jsonObj):
@@ -101,7 +111,7 @@ def getExplains(jsonObj):
         explain = jsonObj['basic']['explains']
         return explain
     except:
-        print "[Err] : No result"
+        print("[Err] : No result")
         exit(1)
 
 
@@ -119,36 +129,32 @@ def getMax(numbers):
 
 def printResult(translation, usPhonetic, phonetic, ukPhonetic, explains, webs):
     maxLength = 16
-    print "-" * maxLength + "翻译" + "-" * maxLength
-    print translation
-    print "-" * maxLength + "音标" + "-" * maxLength
-    if phonetic != "":
-        print "[" + phonetic + "]"
-    if usPhonetic != "":
-        print "[" + usPhonetic + "] (US)"
+    print("{separator}翻译{separator}".format(separator='-'*maxLength))
+    print(translation)
+    print("{separator}音标{separator}".format(separator='-'*maxLength))
+    if phonetic:
+        print("[{phonetic}]".format(phonetic=phonetic))
+    if usPhonetic:
+        print("[{phonetic}] (US)".format(phonetic=usPhonetic))
     if ukPhonetic != "":
-        print "[" + ukPhonetic + "] (UK)"
-    print "-" * maxLength + "解释" + "-" * maxLength
+        print("[{phonetic}] (UK)".format(phonetic=ukPhonetic))
+    print("{separator}解释{separator}".format(separator='-'*maxLength))
     for explain in explains:
-        print explain
-    print "-" * maxLength + "网络" + "-" * maxLength
+        print(explain)
+    print("{separator}网络{separator}".format(separator='-'*maxLength))
     for web in webs:
-        print web['key'] + " : "
+        print('{key} : '.format(key=web['key']))
         values = web['value']
         for value in values:
-            print "    ",
-            print value
-    return ""
+            print("    {value}".format(value=value))
 
 
 def main():
-    checkConfig()
-    initUserInput()
-    global key
-    global keyfrom
-    global doctype
+    key, keyfrom, url, doctype = get_config()
+    checkConfig(key, keyfrom)
+    initUserInput()    
     q = sys.argv[1]
-    tempUrl = getUrl(keyfrom, key, doctype, q)
+    tempUrl = getUrl(url, keyfrom, key, doctype, q)
     content = getContent(tempUrl)
     jsonObj = json.loads(content)
     translation = getTranslation(jsonObj)
