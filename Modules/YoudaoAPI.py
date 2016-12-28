@@ -27,11 +27,11 @@ else:
 # 初始化，获取必要配置
 def get_config():
     configParser = SafeConfigParser()
-    # configParser.read("/opt/fy/Config/config.conf")
-    configParser.read("Config/config.conf")
+    configParser.read("/opt/fy/Config/config.conf")
     key = configParser.get("YoudaoAPI", "key")
     keyfrom = configParser.get("YoudaoAPI", "keyfrom")
     url = configParser.get("YoudaoAPI", "url")
+    url = "http://fanyi.youdao.com/openapi.do"
     doctype = configParser.get("YoudaoAPI", "doctype")
     return (key, keyfrom, url, doctype)
 
@@ -133,20 +133,20 @@ def printResult(translation, usPhonetic, phonetic, ukPhonetic, explains, webs):
     print(translation)
     print("{separator}音标{separator}".format(separator='-'*maxLength))
     if phonetic:
-        print("[{phonetic}]".format(phonetic=phonetic))
+        print("[" + phonetic + "]")
     if usPhonetic:
-        print("[{phonetic}] (US)".format(phonetic=usPhonetic))
+        print("[{" + usPhonetic + "] (US)")
     if ukPhonetic != "":
-        print("[{phonetic}] (UK)".format(phonetic=ukPhonetic))
+        print("[" + ukPhonetic + "] (UK)")
     print("{separator}解释{separator}".format(separator='-'*maxLength))
     for explain in explains:
         print(explain)
     print("{separator}网络{separator}".format(separator='-'*maxLength))
     for web in webs:
-        print('{key} : '.format(key=web['key']))
+        print(web['key'])
         values = web['value']
         for value in values:
-            print("    {value}".format(value=value))
+            print("    " + value)
 
 
 def main():
