@@ -18,7 +18,7 @@ sudo pip install bs4
 ``` 
 3. 克隆项目
 ```
-git clone https://git.coding.net/yihangwang/PyTranslater.git
+git clone https://git.coding.net/yihangwang/PyTranslator.git
 cd PyTranslater
 git checkout release
 ```
