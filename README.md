@@ -1,7 +1,7 @@
 ---
 ####项目说明 : 
 在linux终端下有时候遇到一个想查询的英语单词 , 但是不想打开浏览器去谷歌或者百度去搜索 , 因此就写了这个基于爬虫的单词翻译工具 , 实现原理很简单 , 基本开发已经完成 ,总共有三个分支 , 分别对应 : 爬虫/BaiduAPI/YoudaoAPI , 感觉在有时候读代码变量命名不太懂的时候还是挺有用的 , 毕竟比打开浏览器去访问翻译网站方便多了
-> [项目地址](https://coding.net/u/yihangwang/p/PyTranslater/git/tree/release/) 有兴趣的小伙伴儿咱们可以一起写  : D
+> [项目地址](https://coding.net/u/yihangwang/p/PyTranslator/git/tree/release/) 有兴趣的小伙伴儿咱们可以一起写  : D
 
 ---
 ####安装方法 :
@@ -19,7 +19,7 @@ sudo pip install bs4
 3. 克隆项目
 ```
 git clone https://git.coding.net/yihangwang/PyTranslator.git
-cd PyTranslater
+cd PyTranslator
 git checkout release
 ```
 4. 进行安装 
