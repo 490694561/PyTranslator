@@ -3,6 +3,7 @@
 from __future__ import print_function
 import requests
 import sys
+import os
 import json
 import base64
 
@@ -144,9 +145,13 @@ def getMax(numbers):
 def teePrint(content):
     print(content)
     global q
-    f = open("/tmp/fy/Cache/" + base64.b64encode(q), "a+")
-    f.write((content + "\n").encode("utf-8"))
-    f.close()
+    try:
+        home = os.path.expandvars('$HOME')
+        f = open(home+"/.fy/Cache/" + base64.b64encode(q), "a+")
+        f.write((content + "\n").encode("utf-8"))
+        f.close()
+    except:
+        os.makedirs(home+"/.fy/Cache/")
 
 
 def getResult(translation, usPhonetic, phonetic, ukPhonetic, explains, webs):
