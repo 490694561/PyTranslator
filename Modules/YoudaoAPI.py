@@ -4,6 +4,12 @@ from __future__ import print_function
 import requests
 import sys
 import json
+import base64
+
+reload(sys)
+sys.setdefaultencoding('utf-8') 
+
+q = ""
 
 if sys.version_info[0] < 3:
     from ConfigParser import SafeConfigParser
@@ -24,10 +30,13 @@ else:
 # http://api.fanyi.baidu.com/api/trans/product/apidoc
 
 
+def getPath():
+    return sys.path[0]
+
 # 初始化，获取必要配置
 def get_config():
     configParser = SafeConfigParser()
-    configParser.read("/opt/fy/Config/config.conf")
+    configParser.read(getPath() + "/../Config/config.conf")
     key = configParser.get("YoudaoAPI", "key")
     keyfrom = configParser.get("YoudaoAPI", "keyfrom")
     url = configParser.get("YoudaoAPI", "url")
@@ -69,10 +78,15 @@ def getUrl(url, keyfrom, key, doctype, q):
                               key=key, doctype=doctype, q=q)
     return tempUrl
 
-
 def getContent(url):
-    return requests.get(url).text
-
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        response.encoding = response.apparent_encoding
+        return response.text.encode("UTF-8")
+    except Exception, e:
+        print(str(e))
+        exit(1)
 
 def getTranslation(jsonObj):
     result = ""
@@ -127,33 +141,42 @@ def getMax(numbers):
     return maxNumber
 
 
-def printResult(translation, usPhonetic, phonetic, ukPhonetic, explains, webs):
+def teePrint(content):
+    print(content)
+    global q
+    f = open(getPath() + "/../Cache/" + base64.b64encode(q), "a+")
+    f.write((content + "\n").encode("utf-8"))
+    f.close()
+
+
+def getResult(translation, usPhonetic, phonetic, ukPhonetic, explains, webs):
     maxLength = 16
-    print("{separator}翻译{separator}".format(separator='-'*maxLength))
-    print(translation)
-    print("{separator}音标{separator}".format(separator='-'*maxLength))
+    teePrint("{separator}翻译{separator}".format(separator='-'*maxLength))
+    teePrint(translation)
+    teePrint("{separator}音标{separator}".format(separator='-'*maxLength))
     if phonetic:
-        print("[" + phonetic + "]")
+        teePrint("[" + phonetic + "]")
     if usPhonetic:
-        print("[{" + usPhonetic + "] (US)")
+        teePrint("[{" + usPhonetic + "] (US)")
     if ukPhonetic != "":
-        print("[" + ukPhonetic + "] (UK)")
-    print("{separator}解释{separator}".format(separator='-'*maxLength))
+        teePrint("[" + ukPhonetic + "] (UK)")
+    teePrint("{separator}解释{separator}".format(separator='-'*maxLength))
     for explain in explains:
-        print(explain)
-    print("{separator}网络{separator}".format(separator='-'*maxLength))
+        teePrint(explain)
+    teePrint("{separator}网络{separator}".format(separator='-'*maxLength))
     for web in webs:
-        print(web['key'])
+        teePrint(web['key'])
         values = web['value']
         for value in values:
-            print("    " + value)
+            teePrint("    " + value)
 
 
 def main():
+    global q
     key, keyfrom, url, doctype = get_config()
     checkConfig(key, keyfrom)
     initUserInput()    
-    q = sys.argv[1]
+    q = sys.argv[1].strip()
     tempUrl = getUrl(url, keyfrom, key, doctype, q)
     content = getContent(tempUrl)
     jsonObj = json.loads(content)
@@ -163,6 +186,7 @@ def main():
     ukPhonetic = getUKPhonetic(jsonObj)
     explains = getExplains(jsonObj)
     webs = getWeb(jsonObj)
-    printResult(translation, usPhonetic, phonetic, ukPhonetic, explains, webs)
+    getResult(translation, usPhonetic, phonetic, ukPhonetic, explains, webs)
+
 if __name__ == '__main__':
     main()

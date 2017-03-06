@@ -3,11 +3,16 @@
 from __future__ import print_function
 import os
 import sys
+import base64
 
 if sys.version_info[0] < 3:
     from ConfigParser import SafeConfigParser
 else:
     from configparser import ConfigParser as SafeConfigParser
+
+
+def getPath():
+    return sys.path[0]
 
 
 def get_config():
@@ -65,15 +70,30 @@ def checkConfig(configParser, ModuleName):
     else:
         return False
 
+def checkLocal(word):
+    for i in os.listdir(getPath() + "/Cache/"):
+        if i == base64.b64encode(word):
+            return True
+    return False
+
+def printFileContent(path):
+    with open(path) as f:
+        for line in f:
+            print(line.replace("\n", ""))
 
 def main():
     configParser, defaultModule = get_config()
     checkConfig(configParser, defaultModule)
     word = getUserInput()
-    command = 'python /opt/fy/Modules/{defaultModule}.py' \
+    if checkLocal(word):
+        print("[*]->使用本地缓存")
+        printFileContent(getPath() + "/Cache/" + base64.b64encode(word))
+    else:
+        print ("[*]->使用在线查询")
+        command = 'python '+getPath()+'/Modules/{defaultModule}.py' \
               ' \" {word} \"'.format(defaultModule=defaultModule,
                                      word=word)
-    os.system(command)
+        os.system(command)
 
 
 if __name__ == '__main__':
