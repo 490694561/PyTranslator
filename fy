@@ -71,7 +71,7 @@ def checkConfig(configParser, ModuleName):
         return False
 
 def checkLocal(word):
-    for i in os.listdir(getPath() + "/Cache/"):
+    for i in os.listdir("/tmp/fy/Cache/"):
         if i == base64.b64encode(word):
             return True
     return False
@@ -87,7 +87,7 @@ def main():
     word = getUserInput()
     if checkLocal(word):
         print("[*]->使用本地缓存")
-        printFileContent(getPath() + "/Cache/" + base64.b64encode(word))
+        printFileContent("/tmp/fy/Cache/" + base64.b64encode(word))
     else:
         print ("[*]->使用在线查询")
         command = 'python '+getPath()+'/Modules/{defaultModule}.py' \

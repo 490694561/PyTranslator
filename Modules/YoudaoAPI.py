@@ -144,7 +144,7 @@ def getMax(numbers):
 def teePrint(content):
     print(content)
     global q
-    f = open(getPath() + "/../Cache/" + base64.b64encode(q), "a+")
+    f = open("/tmp/fy/Cache/" + base64.b64encode(q), "a+")
     f.write((content + "\n").encode("utf-8"))
     f.close()
 
