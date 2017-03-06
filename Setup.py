@@ -4,6 +4,7 @@
 import os
 import shutil
 import ConfigParser
+import getpass
 
 
 # global-start
@@ -105,7 +106,9 @@ def main():
     os.system("sudo rm -rf /opt/fy/")
     os.system("sudo rm /bin/fy")
     # 开始安装
-    os.system("sudo mkdir -p /tmp/fy/Cache/")
+    os.system("mkdir -p /tmp/fy/Cache/")
+    os.system("sudo chown -R "+getpass.getuser()+" /tmp/fy/")
+    os.system("sudo chgrp -R "+getpass.getuser()+" /tmp/fy/")
     os.system("pip install -r requirements.txt")
     currentDicName = getCurrentDicName()
     shutil.copytree("../" + currentDicName, installPath)
